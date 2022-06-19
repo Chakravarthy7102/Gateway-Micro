@@ -5,7 +5,7 @@ metadata:
   name: frontend-service
 
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: frontend 
   ports:
