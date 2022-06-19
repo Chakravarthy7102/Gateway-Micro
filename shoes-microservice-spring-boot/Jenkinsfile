@@ -1,0 +1,32 @@
+pipeline{
+    agent any
+
+    stages{
+        stage("Git Checkout"){
+            steps{
+                git 'https://github.com/Chakravarthy7102/Gateway-Micro.git'
+            }
+        }
+
+        stage("Docker Build"){
+            steps{
+                sh 'docker build --tag shoes:${env.BUILD_NUMBER}'
+            }
+        }
+
+        stage("Docker Push"){
+            steps{
+                sh 'docker push chakravarthy712/shoes:${env.BUILD_NUMBER}'
+            }
+        }
+
+        stage("Kubernetes apply"){
+            steps{
+                sh 'cat ../k8s/templates/shoes-deployment.yaml | grep -i image'
+                sh 'sed -i 's/image: shoes:*/image: shoes:"${env.BUILD_NUMBER}"/' ../k8s/templates/shoes-deployment.yaml '
+                sh 'kubectl apply -f ../k8s/templates/shoes-deployment.yaml'
+            }
+        }
+
+    }
+}

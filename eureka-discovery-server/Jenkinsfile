@@ -1,0 +1,32 @@
+pipeline{
+    agent any
+
+    stages{
+        stage("Git Checkout"){
+            steps{
+                git 'https://github.com/Chakravarthy7102/Gateway-Micro.git'
+            }
+        }
+
+        stage("Docker Build"){
+            steps{
+                sh 'docker build --tag eureka:${env.BUILD_NUMBER}'
+            }
+        }
+
+        stage("Docker Push"){
+            steps{
+                sh 'docker push chakravarthy712/eureka:${env.BUILD_NUMBER}'
+            }
+        }
+
+        stage("Kubernetes apply"){
+            steps{
+                sh 'cat ../k8s/templates/eureka-deployment.yaml | grep -i image'
+                sh 'sed -i 's/image: eureka:*/image: eureka:"${env.BUILD_NUMBER}"/' ../k8s/templates/eureka-deployment.yaml '
+                sh 'kubectl apply -f ../k8s/templates/eureka-deployment.yaml'
+            }
+        }
+
+    }
+}
