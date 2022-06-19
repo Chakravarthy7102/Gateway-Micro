@@ -4,6 +4,7 @@ kind: Deployment
 metadata:
   name: cart-deployment
 
+#TODO: add deployment startegy to each and every deployment file
 spec:
   replicas: 3
   selector:
