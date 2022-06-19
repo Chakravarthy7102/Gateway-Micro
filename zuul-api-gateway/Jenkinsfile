@@ -1,6 +1,11 @@
 pipeline{
     agent any
 
+    environment {
+        KUBE = credentials('kubeconfig')
+    }
+
+
     stages{
         stage("Git Checkout"){
             steps{
@@ -24,7 +29,7 @@ pipeline{
             steps{
                 sh 'cat ../k8s/templates/gateway-deployment.yaml | grep -i image'
                 sh 'sed -i 's/image: gateway:*/image: gateway:"${env.BUILD_NUMBER}"/' ../k8s/templates/gateway-deployment.yaml '
-                sh 'kubectl apply -f ../k8s/templates/gateway-deployment.yaml'
+                sh 'kubectl --kubeconfig $KUBE apply -f ../k8s/templates/gateway-deployment.yaml'
             }
         }
 

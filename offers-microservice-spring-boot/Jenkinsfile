@@ -1,6 +1,11 @@
 pipeline{
     agent any
 
+    environment {
+        KUBE = credentials('kubeconfig')
+    }
+
+
     stages{
         stage("Git Checkout"){
             steps{
@@ -21,10 +26,10 @@ pipeline{
         }
 
         stage("Kubernetes apply"){
-            steps{
+            steps {
                 sh 'cat ../k8s/templates/offers-deployment.yaml | grep -i image'
                 sh 'sed -i 's/image: offers:*/image: offers:"${env.BUILD_NUMBER}"/' ../k8s/templates/offers-deployment.yaml '
-                sh 'kubectl apply -f ../k8s/templates/offers-deployment.yaml'
+                sh 'kubectl --kubeconfig $KUBE apply -f ../k8s/templates/offers-deployment.yaml'
             }
         }
 

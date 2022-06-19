@@ -1,6 +1,12 @@
 pipeline{
     agent any
 
+    environment {
+
+        KUBE = credentials('aws-kubeconfig')
+
+    }
+
     stages{
         stage("Git Checkout"){
             steps{
@@ -24,7 +30,7 @@ pipeline{
             steps{
                 sh 'cat ../k8s/templates/cart-deployment.yaml | grep -i image'
                 sh 'sed -i 's/image: cart:*/image: cart:"${env.BUILD_NUMBER}"/' ../k8s/templates/cart-deployment.yaml '
-                sh 'kubectl apply -f ../k8s/templates/cart-deployment.yaml'
+                sh 'kubectl --kubeconfig $KUBE apply -f ../k8s/templates/cart-deployment.yaml'
             }
         }
 
