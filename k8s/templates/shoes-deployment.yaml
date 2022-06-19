@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: shoes-deployment
+
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: shoes
+  template:
+    metadata:
+      labels:
+        app: shoes
+    spec:
+      containers:
+        - name: shoes
+          image: shoes:latest
+          imagePullPolicy: Always
+          resources:
+            limits:
+              memory: "500Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 1002

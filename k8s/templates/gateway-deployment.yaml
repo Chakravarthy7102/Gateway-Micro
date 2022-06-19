@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api-gateway-deployment
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway 
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+        - name: gateway
+          image: gateway:1.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 9999
+          resources:
+            limits:
+              memory: "500Mi"
+              cpu: "500m"
