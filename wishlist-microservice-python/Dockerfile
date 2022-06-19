@@ -2,7 +2,7 @@ FROM python:alpine3.7
 
 COPY . .
 
-RUN pip install -r requirment.txt
+RUN pip install -r requirement.txt
 
 EXPOSE 1003
 

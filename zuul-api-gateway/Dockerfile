@@ -19,14 +19,14 @@ WORKDIR /app
 
 COPY . /app
 
-RUN mvn install
+RUN mvn install -Dmaven.test.skip
 # for a single dockerfile you only have one CMD or entrypoint script
 
 FROM openjdk:11.0.10-jre
 
 WORKDIR /app
 
-COPY from=builder /app/target/zuul-0.0.1-SNAPSHOT.jar /app/
+COPY --from=builder /app/target/zuul-0.0.1-SNAPSHOT.jar /app/
 
 EXPOSE 9999
 

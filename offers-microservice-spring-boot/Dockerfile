@@ -22,7 +22,7 @@ WORKDIR /app
 
 COPY . /app/
 
-RUN mvn install
+RUN mvn install -Dmaven.test.skip
 
 FROM openjdk:11.0.10-jre
 
