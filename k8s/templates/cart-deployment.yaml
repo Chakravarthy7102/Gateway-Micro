@@ -2,26 +2,32 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: cart-deployment
+  name: {{ .Values.cart.labels.app }}-deployment
 
 #TODO: add deployment startegy to each and every deployment file
 spec:
-  replicas: 3
+  replicas: {{ .Values.cart.replicaCount }}
   selector:
+    {{- with .Values.cart.labels }}
     matchLabels:
-      app: cart
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
   template:
     metadata:
+    {{- with .Values.cart.labels }}
       labels:
-        app: cart
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     spec:
       containers:
-        - name: cart
-          image: cart:latest
-          imagePullPolicy: Always
+        - name: {{ .Values.cart.image.name }}
+          image: "{{ .Values.cart.image.name }}:{{ .Values.cart.image.tag }}"
+          imagePullPolicy: {{ .Values.cart.image.pullPolicy }}
+          {{- with .Values.cart.resources }}
           resources:
-            limits:
-              memory: "500Mi"
-              cpu: "500m"
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.cart.image.ports }}
           ports:
-            - containerPort: 1004
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
