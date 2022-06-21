@@ -2,25 +2,32 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: shoes-deployment
+  name: {{ .Values.shoes.labels.app }}-deployment
 
+#TODO: add deployment startegy to each and every deployment file
 spec:
-  replicas: 3
+  replicas: {{ .Values.shoes.replicaCount }}
   selector:
+    {{- with .Values.shoes.labels }}
     matchLabels:
-      app: shoes
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
   template:
     metadata:
+    {{- with .Values.shoes.labels }}
       labels:
-        app: shoes
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     spec:
       containers:
-        - name: shoes
-          image: shoes:latest
-          imagePullPolicy: Always
+        - name: {{ .Values.shoes.image.name }}
+          image: "{{ .Values.registry }}/{{ .Values.shoes.image.name }}:{{ .Values.shoes.image.tag }}"
+          imagePullPolicy: {{ .Values.shoes.image.pullPolicy }}
+          {{- with .Values.shoes.resources }}
           resources:
-            limits:
-              memory: "500Mi"
-              cpu: "500m"
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.shoes.image.ports }}
           ports:
-            - containerPort: 1002
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

@@ -2,25 +2,32 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: offers-deployment
+  name: {{ .Values.offers.labels.app }}-deployment
 
+#TODO: add deployment startegy to each and every deployment file
 spec:
-  replicas: 3
+  replicas: {{ .Values.offers.replicaCount }}
   selector:
+    {{- with .Values.offers.labels }}
     matchLabels:
-      app: offers
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
   template:
     metadata:
+    {{- with .Values.offers.labels }}
       labels:
-        app: offers
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     spec:
       containers:
-        - name: offers
-          image: offers:latest
-          imagePullPolicy: Always
+        - name: {{ .Values.offers.image.name }}
+          image: "{{ .Values.registry }}/{{ .Values.offers.image.name }}:{{ .Values.offers.image.tag }}"
+          imagePullPolicy: {{ .Values.offers.image.pullPolicy }}
+          {{- with .Values.offers.resources }}
           resources:
-            limits:
-              memory: "500Mi"
-              cpu: "500m"
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.offers.image.ports }}
           ports:
-            - containerPort: 1001
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

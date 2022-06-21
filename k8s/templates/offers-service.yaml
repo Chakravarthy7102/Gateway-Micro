@@ -2,14 +2,16 @@ apiVersion: v1
 kind: Service
 
 metadata:
-  name: offers-service
+  name: {{ .Values.offers.service.name }}-service
 
 spec:
-  type: ClusterIP
+  type: {{ .Values.offers.service.type }}
+  {{- with .Values.offers.labels }}
   selector:
-    app: offers
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.offers.service.ports }}
   ports:
-    - protocol: TCP
-      targetPort: 1001
-      port: 1001
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
 

@@ -1,19 +1,19 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: api-ingress
-  {{- with .Values.ingress.annotations }}
-  annotations:
-    {{- toYaml . | nindent 4 }}
-  {{- end }}
+  name: {{ .Values.ingress.name }}
 spec:
   rules:
+    {{- range .Values.ingress.rules }}
   - http:
       paths:
-      - pathType: Prefix
-        path: "/"
+      {{- range .http.paths }}
+      - pathType: {{ .pathType }}
+        path: {{ .path | quote }}
         backend:
           service:
-            name: frontend-service
+            name: {{ .backend.service.name }}
             port:
-              number: 8080
+              number: {{ .backend.service.port.number }}
+      {{- end }}
+    {{- end }}

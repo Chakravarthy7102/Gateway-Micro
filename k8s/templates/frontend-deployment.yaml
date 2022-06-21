@@ -2,25 +2,32 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: frontend-deployment
+  name: {{ .Values.frontend.labels.app }}-deployment
 
+#TODO: add deployment startegy to each and every deployment file
 spec:
-  replicas: 3
+  replicas: {{ .Values.frontend.replicaCount }}
   selector:
+    {{- with .Values.frontend.labels }}
     matchLabels:
-      app: frontend
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
   template:
     metadata:
+    {{- with .Values.frontend.labels }}
       labels:
-        app: frontend
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     spec:
       containers:
-        - name: frontend
-          image: frontend:1.0
-          imagePullPolicy: Never
-          ports:
-            - containerPort: 8080
+        - name: {{ .Values.frontend.image.name }}
+          image: "{{ .Values.registry }}/{{ .Values.frontend.image.name }}:{{ .Values.frontend.image.tag }}"
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+          {{- with .Values.frontend.resources }}
           resources:
-            limits:
-              memory: "500Mi"
-              cpu: "500m"
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.frontend.image.ports }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

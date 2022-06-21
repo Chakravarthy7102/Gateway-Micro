@@ -2,13 +2,16 @@ apiVersion: v1
 kind: Service
 
 metadata:
-  name: shoes-service
+  name: {{ .Values.shoes.service.name }}-service
 
 spec:
-  type: ClusterIP
+  type: {{ .Values.shoes.service.type }}
+  {{- with .Values.shoes.labels }}
   selector:
-    app: shoes
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.shoes.service.ports }}
   ports:
-    - protocol: TCP
-      targetPort: 1002
-      port: 1002
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+

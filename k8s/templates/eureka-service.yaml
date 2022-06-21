@@ -2,13 +2,15 @@ apiVersion: v1
 kind: Service
 
 metadata:
-  name: eureka-service
+  name: {{ .Values.eureka.service.name }}-service
 
 spec:
+  type: {{ .Values.eureka.service.type }}
+  {{- with .Values.eureka.labels }}
   selector:
-    app: eureka
-  type: ClusterIP
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.eureka.service.ports }}
   ports:
-    - protocol: TCP
-      targetPort: 8761
-      port: 8761
+    {{- toYaml . | nindent 4 }}
+  {{- end }}

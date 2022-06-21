@@ -2,26 +2,32 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: eureka
+  name: {{ .Values.eureka.labels.app }}-deployment
 
+#TODO: add deployment startegy to each and every deployment file
 spec:
-  replicas: 1
+  replicas: {{ .Values.eureka.replicaCount }}
   selector:
+    {{- with .Values.eureka.labels }}
     matchLabels:
-      app: eureka
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
   template:
     metadata:
-      labels: 
-        app: eureka
+    {{- with .Values.eureka.labels }}
+      labels:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     spec:
       containers:
-        - name: eureka
-          image: eureka:latest
-          imagePullPolicy: Never
+        - name: {{ .Values.eureka.image.name }}
+          image: "{{ .Values.registry }}/{{ .Values.eureka.image.name }}:{{ .Values.eureka.image.tag }}"
+          imagePullPolicy: {{ .Values.eureka.image.pullPolicy }}
+          {{- with .Values.eureka.resources }}
           resources:
-            limits:
-              memory: "500Mi"
-              cpu: "500m"
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.eureka.image.ports }}
           ports:
-            - containerPort: 8761
-          
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

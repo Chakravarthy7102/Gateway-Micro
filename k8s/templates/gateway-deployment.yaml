@@ -1,25 +1,33 @@
 apiVersion: apps/v1
 kind: Deployment
-metadata:
-  name: api-gateway-deployment
 
+metadata:
+  name: {{ .Values.gateway.labels.app }}-deployment
+
+#TODO: add deployment startegy to each and every deployment file
 spec:
-  replicas: 1
+  replicas: {{ .Values.gateway.replicaCount }}
   selector:
+    {{- with .Values.gateway.labels }}
     matchLabels:
-      app: gateway 
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
   template:
     metadata:
+    {{- with .Values.gateway.labels }}
       labels:
-        app: gateway
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     spec:
       containers:
-        - name: gateway
-          image: gateway:1.0
-          imagePullPolicy: Never
-          ports:
-            - containerPort: 9999
+        - name: {{ .Values.gateway.image.name }}
+          image: "{{ .Values.registry }}/{{ .Values.gateway.image.name }}:{{ .Values.gateway.image.tag }}"
+          imagePullPolicy: {{ .Values.gateway.image.pullPolicy }}
+          {{- with .Values.gateway.resources }}
           resources:
-            limits:
-              memory: "500Mi"
-              cpu: "500m"
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.gateway.image.ports }}
+          ports:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

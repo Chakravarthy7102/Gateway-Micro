@@ -2,25 +2,32 @@ apiVersion: apps/v1
 kind: Deployment
 
 metadata:
-  name: wishlist-deployment
+  name: {{ .Values.wishlist.labels.app }}-deployment
 
+#TODO: add deployment startegy to each and every deployment file
 spec:
-  replicas: 3
+  replicas: {{ .Values.wishlist.replicaCount }}
   selector:
+    {{- with .Values.wishlist.labels }}
     matchLabels:
-      app: wishlist
+      {{- toYaml . | nindent 6 }}
+    {{- end }}
   template:
     metadata:
+    {{- with .Values.wishlist.labels }}
       labels:
-        app: wishlist
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
     spec:
       containers:
-        - name: wishlist
-          image: wishlist:latest
-          imagePullPolicy: Always
+        - name: {{ .Values.wishlist.image.name }}
+          image: "{{ .Values.registry }}/{{ .Values.wishlist.image.name }}:{{ .Values.wishlist.image.tag }}"
+          imagePullPolicy: {{ .Values.wishlist.image.pullPolicy }}
+          {{- with .Values.wishlist.resources }}
           resources:
-            limits:
-              memory: "500Mi"
-              cpu: "500m"
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.wishlist.image.ports }}
           ports:
-            - containerPort: 1003
+            {{- toYaml . | nindent 12 }}
+          {{- end }}

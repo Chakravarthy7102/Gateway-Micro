@@ -21,7 +21,7 @@ spec:
     spec:
       containers:
         - name: {{ .Values.cart.image.name }}
-          image: "{{ .Values.cart.image.name }}:{{ .Values.cart.image.tag }}"
+          image: "{{ .Values.registry }}/{{ .Values.cart.image.name }}:{{ .Values.cart.image.tag }}"
           imagePullPolicy: {{ .Values.cart.image.pullPolicy }}
           {{- with .Values.cart.resources }}
           resources:

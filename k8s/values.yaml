@@ -3,7 +3,7 @@
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
-
+registry: chakravarthy712
 image:
   repository: nginx
   pullPolicy: IfNotPresent
@@ -40,17 +40,17 @@ service:
   type: ClusterIP
   port: 80
 
-ingress:
-  enabled: false
-  className: ""
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: chart-example.local
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
+# ingress:
+#   enabled: false
+#   className: ""
+#   annotations: {}
+#     # kubernetes.io/ingress.class: nginx
+#     # kubernetes.io/tls-acme: "true"
+#   hosts:
+#     - host: chart-example.local
+#       paths:
+#         - path: /
+#           pathType: ImplementationSpecific
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
@@ -90,7 +90,7 @@ cart:
   replicaCount: 2
   image:
     name: cart
-    tag: latest
+    tag: 1
     pullPolicy: Always
     ports:
       - containerPort: 1004 
@@ -112,6 +112,202 @@ cart:
 
 ######################################
 #                                    #
-#      OFFERS SERVICE  RELATED         #        
+#      OFFERS SERVICE  RELATED       #        
 #                                    #
 ######################################
+
+offers:
+  replicaCount: 2
+  image:
+    name: offers
+    tag: 1
+    pullPolicy: Always
+    ports:
+      - containerPort: 1001 
+  resources:
+    limits:
+      memory: "500Mi"
+      cpu: "500m"
+  labels:
+    app: offers
+  service:
+    name: offers
+    type: ClusterIP
+    ports:
+      - protocol: TCP
+        targetPort: 1001
+        port: 1001
+
+
+
+
+######################################
+#                                    #
+#      EUREKA SERVICE  RELATED       #        
+#                                    #
+######################################
+
+eureka:
+  replicaCount: 1
+  image:
+    name: eureka
+    tag: 1
+    pullPolicy: Always
+    ports:
+      - containerPort: 8761 
+  resources:
+    limits:
+      memory: "500Mi"
+      cpu: "500m"
+  labels:
+    app: eureka
+  service:
+    name: eureka
+    type: ClusterIP
+    ports:
+      - protocol: TCP
+        targetPort: 8761
+        port: 8761
+
+######################################
+#                                    #
+#      FRONTEND SERVICE  RELATED     #        
+#                                    #
+######################################
+
+
+frontend:
+  replicaCount: 1
+  image:
+    name: frontend
+    tag: 1.0
+    pullPolicy: Always
+    ports:
+      - containerPort: 8080 
+  resources:
+    limits:
+      memory: "500Mi"
+      cpu: "500m"
+  labels:
+    app: frontend
+  service:
+    name: frontend
+    type: LoadBalancer
+    ports:
+      - protocol: TCP
+        targetPort: 8080
+        port: 8080
+
+######################################
+#                                    #
+#      GATEWAY SERVICE  RELATED      #        
+#                                    #
+######################################
+
+
+gateway:
+  replicaCount: 2
+  image:
+    name: gateway
+    tag: 1
+    pullPolicy: Always
+    ports:
+      - containerPort: 9999 
+  resources:
+    limits:
+      memory: "500Mi"
+      cpu: "500m"
+  labels:
+    app: gateway
+  service:
+    name: gateway
+    type: ClusterIP
+    ports:
+      - protocol: TCP
+        targetPort: 9999
+        port: 9999
+
+######################################
+#                                    #
+#       SHOES SERVICE  RELATED       #        
+#                                    #
+######################################
+
+shoes:
+  replicaCount: 1
+  image:
+    name: shoes
+    tag: 1
+    pullPolicy: Always
+    ports:
+      - containerPort: 1002 
+  resources:
+    limits:
+      memory: "500Mi"
+      cpu: "500m"
+  labels:
+    app: shoes
+  service:
+    name: shoes
+    type: ClusterIP
+    ports:
+      - protocol: TCP
+        targetPort: 1002
+        port: 1002
+
+######################################
+#                                    #
+#       WISHLIST SERVICE  RELATED    #        
+#                                    #
+######################################
+
+wishlist:
+  replicaCount: 1
+  image:
+    name: wishlist
+    tag: 1
+    pullPolicy: Always
+    ports:
+      - containerPort: 1003 
+  resources:
+    limits:
+      memory: "500Mi"
+      cpu: "500m"
+  labels:
+    app: wishlist
+  service:
+    name: wishlist
+    type: ClusterIP
+    ports:
+      - protocol: TCP
+        targetPort: 1003
+        port: 1003
+
+######################################
+#                                    #
+#       INGRESS SERVICE  RELATED     #        
+#                                    #
+######################################
+
+ingress:
+  name: api-ingress
+  enabled: true
+  className: ""
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  hosts:
+    - host: chart-example.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  rules:
+    - http:
+        paths:
+        - pathType: Prefix
+          path: "/"
+          backend:
+            service:
+              name: frontend-service
+              port:
+                number: 8080

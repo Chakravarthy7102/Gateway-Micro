@@ -21,3 +21,8 @@
 .idea/
 *.tmproj
 .vscode/
+deployment.yaml
+ingress.yaml
+NOTES.txt
+ngin*
+hpa*
