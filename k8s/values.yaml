@@ -87,7 +87,7 @@ affinity: {}
 #                                    #
 ######################################
 cart:
-  replicaCount: 2
+  replicaCount: 1
   image:
     name: cart
     tag: 1
@@ -117,7 +117,7 @@ cart:
 ######################################
 
 offers:
-  replicaCount: 2
+  replicaCount: 1
   image:
     name: offers
     tag: 1
@@ -206,10 +206,10 @@ frontend:
 
 
 gateway:
-  replicaCount: 2
+  replicaCount: 1
   image:
     name: gateway
-    tag: 1
+    tag: latest
     pullPolicy: Always
     ports:
       - containerPort: 9999 
