@@ -1,9 +1,14 @@
 pipeline{
     agent any
 
-     environment {
-        KUBE = credentials('kubeconfig')
-     }
+    environment {
+
+       def KUBE = credentials('aws-kubeconfig')
+       def HELM_CHART_NAME = "web"
+       def CHART_DIRECTORY =  "../k8s/"
+       def REGI_NAME ="chakravarthy712"
+        
+    }
 
     stages{
         stage("Git Checkout"){
@@ -14,21 +19,26 @@ pipeline{
 
         stage("Docker Build"){
             steps{
-                sh 'docker build --tag frontend:${env.BUILD_NUMBER}'
+                sh 'docker build --tag frontend:${BUILD_NUMBER}'
+                sh 'docker images'
             }
         }
 
         stage("Docker Push"){
             steps{
-                sh 'docker push chakravarthy712/frontend:${env.BUILD_NUMBER}'
+                sh 'docker push ${REGI_NAME}/frontend:${BUILD_NUMBER}'
+                sh 'docker rmi ${REGI_NAME}/frontend:${BUILD_NUMBER}'
             }
         }
 
         stage("Kubernetes apply"){
             steps{
-                sh 'cat ../k8s/templates/frontend-deployment.yaml | grep -i image'
-                sh 'sed -i 's/image: frontend:*/image: frontend:"${env.BUILD_NUMBER}"/' ../k8s/templates/frontend-deployment.yaml '
-                sh 'kubectl --kubeconfig $KUBE apply -f ../k8s/templates/frontend-deployment.yaml'
+                // sh 'cat ../k8s/templates/frontend-deployment.yaml | grep -i image'
+                // sh 'sed -i 's/image: frontend:*/image: frontend:"${BUILD_NUMBER}"/' ../k8s/templates/frontend-deployment.yaml '
+                // sh 'kubectl --kubeconfig $KUBE apply -f ../k8s/templates/frontend-deployment.yaml'/
+                sh 'helm list'
+                sh 'helm lint ${CHART_DIRECTORY}'
+                sh 'helm upgrade --set frontend.image.tag=${BUILD_NUMBER} ${HELM_CHART_NAME} ${CHART_DIRECTORY} '
             }
         }
 
