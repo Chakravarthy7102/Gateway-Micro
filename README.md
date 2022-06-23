@@ -1,4 +1,4 @@
-# Code Owner
+# Source Code Owner
 
 [![GitHub followers](https://img.shields.io/github/followers/sarat9.svg?label=Follow%20@sarat9&style=social)](https://github.com/sarat9/)
 
