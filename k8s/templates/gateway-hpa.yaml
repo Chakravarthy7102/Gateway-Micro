@@ -1,0 +1,32 @@
+{{- if .Values.gateway.autoscalar.isEnabled }}
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+
+metadata:
+  name: {{ .Values.gateway.image.name }}-autoscalar
+
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ .Values.gateway.image.name }}
+  minReplicas: {{ .Values.gateway.autoscalar.minReplicas }}
+  maxReplicas: {{ .Values.gateway.autoscalar.maxReplicas }}
+  metrics:
+    {{- if .Values.gateway.autoscalar.averageCPUUtilization }}
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.gateway.autoscalar.averageCPUUtilization }}
+    {{- end }}
+    {{- if .Values.gateway.autoscalar.averageMemoryUtilization }}
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: {{ .Values.gateway.autoscalar.averageMemoryUtilization }}
+    {{- end }}
+{{- end }}
